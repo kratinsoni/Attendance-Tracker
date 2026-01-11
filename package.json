@@ -1,0 +1,30 @@
+{
+  "name": "attendance-tracker",
+  "version": "1.0.0",
+  "description": "Attendance Tracker for IIT KGP Community ",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kratinsoni/Attendance-Tracker.git"
+  },
+  "keywords": [],
+  "author": "Tarun Mundhra",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/kratinsoni/Attendance-Tracker/issues"
+  },
+  "homepage": "https://github.com/kratinsoni/Attendance-Tracker#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "mongoose": "^9.1.2",
+    "nodemon": "^3.1.11"
+  }
+}
