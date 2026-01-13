@@ -2,20 +2,29 @@ import mongoose from "mongoose";
 
 const timeTableSchema = new mongoose.Schema(
   {
-    subject: {
+    name: {
       type: String,
       required: true,
+      Trim: true,
     },
-    day: {
-      type: String,
+    semester: {
+      type: Number,
       required: true,
     },
-    startTime: {
-      type: String,
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",  
       required: true,
     },
-    endTime: {
+    subjects: [ 
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Subject",
+      },
+    ],
+    semesterType: {
       type: String,
+      enum: ["AUTUMN", "SPRING"],
       required: true,
     },
   },
