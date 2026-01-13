@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const timeTableSchema = new mongoose.Schema(
+const timetableSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -31,5 +31,5 @@ const timeTableSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const TimeTable = mongoose.model("TimeTable", timeTableSchema);
+export const Timetable = mongoose.model("Timetable", timetableSchema);
 
