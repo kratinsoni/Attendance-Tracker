@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import cors from 'cors';
 import helmet from 'helmet';
+import { errorHandler } from './Middlewares/errorHandler.middleware.js';
 
 // dotenv.config("./.env");
 
@@ -30,5 +31,7 @@ app.use('/api/v1/dashboard', DashboardRoutes);
 app.use('/api/v1/details', DetailsRoutes);
 app.use('/api/v1/subjects', SubjectRoutes);
 app.use('/api/v1/timetable', TimetableRoutes);
+
+app.use(errorHandler);
 
 export default app;
