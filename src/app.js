@@ -2,12 +2,13 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import cors from 'cors';
+import helmet from 'helmet';
 
 // dotenv.config("./.env");
 
 const app = express();
-const PORT = process.env.PORT || 3000; 
 
+app.use(helmet());
 app.use(cors());
 
 app.use(express.json());
