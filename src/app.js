@@ -16,5 +16,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(cookieParser());
 
+// Routes would be defined here
+import UserRoutes from './Routes/user.routes.js';
+import AttendanceRoutes from './Routes/attendance.routes.js';
+import DashboardRoutes from './Routes/dashboard.routes.js';
+import DetailsRoutes from './Routes/details.routes.js';
+import SubjectRoutes from './Routes/subject.routes.js';
+import TimetableRoutes from './Routes/timetable.routes.js';
+
+app.use('/api/v1/users', UserRoutes);
+app.use('/api/v1/attendance', AttendanceRoutes);
+app.use('/api/v1/dashboard', DashboardRoutes);
+app.use('/api/v1/details', DetailsRoutes);
+app.use('/api/v1/subjects', SubjectRoutes);
+app.use('/api/v1/timetable', TimetableRoutes);
 
 export default app;
