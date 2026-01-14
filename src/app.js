@@ -1,11 +1,8 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import 'dotenv/config';
 import cors from 'cors';
 import helmet from 'helmet';
 import { errorHandler } from './Middlewares/errorHandler.middleware.js';
-
-// dotenv.config("./.env");
 
 const app = express();
 

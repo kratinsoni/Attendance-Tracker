@@ -6,7 +6,7 @@ import {
 	deleteTimetable,
 	updateTimetable,
 	addSubjectToTimetable,
-	removeSubjextFromTimetable,
+	removeSubjectFromTimetable,
 	getAllTimetables,
 	getTimetableById,
 	getTimetableStatByWeek,
@@ -18,7 +18,7 @@ timetableRouter.post("/", createTimetable);
 timetableRouter.delete("/:id", deleteTimetable);
 timetableRouter.patch("/:id", updateTimetable);
 timetableRouter.post("/:id/subjects", addSubjectToTimetable);
-timetableRouter.delete("/:id/subjects/:subjectId", removeSubjextFromTimetable);
+timetableRouter.delete("/:id/subjects/:subjectId", removeSubjectFromTimetable);
 timetableRouter.get("/:id", getTimetableById);
 timetableRouter.get("/", getAllTimetables);
 timetableRouter.get("/stats/week/:week", getTimetableStatByWeek);

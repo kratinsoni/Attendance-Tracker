@@ -5,7 +5,6 @@ import {
   registerUser,
   login,
   logout,
-  generateRefreshAndAccessToken,
   changePassword,
   deleteUser,
   updateProfile,
@@ -19,7 +18,6 @@ const userRouter = express.Router();
 userRouter.post("/register", registerUser);
 userRouter.post("/login", login);
 userRouter.post("/logout", logout);
-userRouter.post("/token", generateRefreshAndAccessToken);
 
 // Protected / user management routes
 userRouter.patch("/change-password", changePassword);

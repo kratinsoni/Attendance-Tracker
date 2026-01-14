@@ -1,6 +1,6 @@
-import { asyncHandler } from "../Utils/asyncHandler";
-import { ApiError } from "../Utils/ApiError";
-import { ApiResponse } from "../Utils/ApiResponse";
+import { asyncHandler } from "../Utils/asyncHandler.js";
+import { ApiError } from "../Utils/ApiError.js";
+import { ApiResponse } from "../Utils/ApiResponse.js";
 
 const createTimetable = asyncHandler(async (req, res) => {});
 
