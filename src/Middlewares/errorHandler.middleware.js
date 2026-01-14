@@ -1,4 +1,4 @@
-import { ApiError } from "./ApiError.js"; // Adjust path as needed
+import { ApiError } from "../Utils/ApiError.js"; // Adjust path as needed
 
 const errorHandler = (err, req, res, next) => {
   let error = err;
