@@ -8,6 +8,7 @@ import {
 	addSubjectToTimetable,
 	removeSubjectFromTimetable,
 	getAllTimetables,
+	getAllTimetablesOfUser,
 	getTimetableById,
 	getTimetableStatByWeek,
 } from "../Controllers/timetable.controller.js";
@@ -21,6 +22,7 @@ timetableRouter.post("/:id/subjects", addSubjectToTimetable);
 timetableRouter.delete("/:id/subjects/:subjectId", removeSubjectFromTimetable);
 timetableRouter.get("/:id", getTimetableById);
 timetableRouter.get("/", getAllTimetables);
+timetableRouter.get("/user/:userId", getAllTimetablesOfUser);
 timetableRouter.get("/stats/week/:week", getTimetableStatByWeek);
 
 export default timetableRouter;

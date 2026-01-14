@@ -1,22 +1,221 @@
 import { asyncHandler } from "../Utils/asyncHandler.js";
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
+import { Timetable } from "../Models/timeTable.model.js";
+import { Subject } from "../Models/subject.model.js";
+import { User } from "../Models/user.model.js";
+import { Attendance } from "../Models/attendance.model.js";
+import getWeekClasses from "../helpers/getWeekClasses.helper.js";
 
-const createTimetable = asyncHandler(async (req, res) => {});
+const createTimetable = asyncHandler(async (req, res) => {
+  const { name, semester, student, semesterType } = req.body;
 
-const deleteTimetable = asyncHandler(async (req, res) => {});
+  if(!name) throw new ApiError(400, "Timetable name is required");
+  if(!semester) throw new ApiError(400, "Semester is required");
+  if(!student) throw new ApiError(400, "Student ID is required");
+  if(!semesterType) throw new ApiError(400, "Semester type is required");
 
-const updateTimetable = asyncHandler(async (req, res) => {});
+  const timetable = await Timetable.create({
+    name,
+    semester,
+    student,
+    semesterType,
+  })
 
-const addSubjectToTimetable = asyncHandler(async (req, res) => {});
+  const createdTimetable = await Timetable.findById(timetable._id).populate('student');
 
-const removeSubjectFromTimetable = asyncHandler(async (req, res) => {});
+  if(!createdTimetable) throw new ApiError(500, "Failed to create timetable");
 
-const getAllTimetables = asyncHandler(async (req, res) => {});
+  return res.status(201).json(new ApiResponse(201, "Timetable created successfully", createdTimetable));
 
-const getTimetableById = asyncHandler(async (req, res) => {});
+});
 
-const getTimetableStatByWeek = asyncHandler(async (req, res) => {});
+const deleteTimetable = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if(!id) throw new ApiError(400, "Timetable ID is required");
+
+  const timetable = await Timetable.findById(id);
+
+  if(!timetable) throw new ApiError(404, "Timetable not found");
+
+  const deletedTimetable = await Timetable.findByIdAndDelete(id);
+
+  if(!deletedTimetable) throw new ApiError(500, "Failed to delete timetable");
+
+  return res.status(200).json(new ApiResponse(200, "Timetable deleted successfully", deletedTimetable));
+});
+
+const updateTimetable = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name, semester, semesterType } = req.body;
+  if(!id) throw new ApiError(400, "Timetable ID is required");
+
+  const timetable = await Timetable.findById(id);
+
+  if(!timetable) throw new ApiError(404, "Timetable not found");
+
+  timetable.name = name || timetable.name;
+  timetable.semester = semester || timetable.semester;
+  timetable.semesterType = semesterType || timetable.semesterType;
+
+  const updatedTimetable = await timetable.save();
+
+  if(!updatedTimetable) throw new ApiError(500, "Failed to update timetable");
+
+  return res.status(200).json(new ApiResponse(200, "Timetable updated successfully", updatedTimetable));
+});
+
+const addSubjectToTimetable = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { subjectId } = req.body;
+
+  if(!id) throw new ApiError(400, "Timetable ID is required");
+  if(!subjectId) throw new ApiError(400, "Subject ID is required");
+
+  const timetable = await Timetable.findById(id);
+
+  if(!timetable) throw new ApiError(404, "Timetable not found");
+
+  const subject = await Subject.findById(subjectId);
+
+  if(!subject) throw new ApiError(404, "Subject not found");
+
+  timetable.subjects.push(subjectId);
+
+  const updatedTimetable = await timetable.save();
+
+  if(!updatedTimetable) throw new ApiError(500, "Failed to add subject to timetable");
+
+  return res.status(200).json(new ApiResponse(200, "Subject added to timetable successfully", updatedTimetable));
+});
+
+const removeSubjectFromTimetable = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { subjectId } = req.body;
+
+  if(!id) throw new ApiError(400, "Timetable ID is required");
+  if(!subjectId) throw new ApiError(400, "Subject ID is required");
+  const timetable = await Timetable.findById(id);
+
+  if(!timetable) throw new ApiError(404, "Timetable not found");
+
+  const subject = await Subject.findById(subjectId);
+
+  if(!subject) throw new ApiError(404, "Subject not found");
+
+  timetable.subjects = timetable.subjects.filter((subjId) => subjId.toString() !== subjectId);
+
+  const updatedTimetable = await timetable.save();
+
+  if(!updatedTimetable) throw new ApiError(500, "Failed to remove subject from timetable");
+
+  return res.status(200).json(new ApiResponse(200, "Subject removed from timetable successfully", updatedTimetable));
+});
+
+const getAllTimetables = asyncHandler(async (req, res) => {
+  const timetables = await Timetable.find().populate('student').populate('subjects');
+
+  return res.status(200).json(new ApiResponse(200, "Timetables fetched successfully", timetables));
+});
+
+const getAllTimetablesOfUser = asyncHandler(async (req, res) => {
+  const {id} = req.params;
+  if(!id) throw new ApiError(400, "User ID is required");
+
+  const user = await req.user;
+
+  if(!user) throw new ApiError(404, "User not found");
+
+  const timetables = await Timetable.find({student: id}).populate('student').populate('subjects');
+
+  return res.status(200).json(new ApiResponse(200, "Timetables fetched successfully", timetables));
+})
+
+const getTimetableById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if(!id) throw new ApiError(400, "Timetable ID is required");
+
+  const timetable = await Timetable.findById(id).populate('student').populate('subjects');
+
+  if(!timetable) throw new ApiError(404, "Timetable not found");
+
+  return res.status(200).json(new ApiResponse(200, "Timetable fetched successfully", timetable));
+});
+
+const getTimetableStatByWeek = asyncHandler(async (req, res) => {
+  const {startingDate, endingDate, id} = req.params;
+
+  if(!startingDate || !endingDate) throw new ApiError(400, "Starting date and ending date are required");
+  if(!id) throw new ApiError(400, "Timetable ID is required");
+
+  const timetable = await Timetable.findById(id).populate('student').populate('subjects');
+
+  if(!timetable) throw new ApiError(404, "Timetable not found");
+
+  const attendanceRecords = await Attendance.find({
+    student: timetable.student._id,
+    createdAt: { $gte: new Date(startingDate), $lte: new Date(endingDate) }
+  });
+
+  if(!attendanceRecords) throw new ApiResponse(200, "No attendance records found for the given week", {});
+
+  let stats = {};
+
+  attendanceRecords.forEach((record, index) => {
+    const subjectId = record.subject.toString();
+    const subject = timetable.subjects.find(subj => subj._id.toString() === subjectId);
+    if(!stats[subject]){
+      stats[subject] = {
+        subject: subject.name,
+        slots: subject.slots,
+        type: subject.type,
+        code: subject.code,
+        day: record.day,
+        presentCount: 0,
+        absentCount: 0,
+        medicalCount: 0,
+        cancelledCount: 0,
+      }
+      stats[subject].presentCount = (record.type === "PRESENT") ? 1 : 0;
+      stats[subject].absentCount = (record.type === "ABSENT") ? 1 : 0;
+      stats[subject].medicalCount = (record.type === "MEDICAL") ? 1 : 0;
+      stats[subject].cancelledCount = (record.type === "CANCELLED") ? 1 : 0;
+    }
+    else{
+      stats[subject].presentCount += (record.type === "PRESENT") ? 1 : 0;
+      stats[subject].absentCount += (record.type === "ABSENT") ? 1 : 0;
+      stats[subject].medicalCount += (record.type === "MEDICAL") ? 1 : 0;
+      stats[subject].cancelledCount += (record.type === "CANCELLED") ? 1 : 0;
+    }
+  })
+
+  stats.forEach((subjectStat) => {
+    subjectStat.classesThisWeek = getWeekClasses(subjectStat.slots);
+    subjectStat.classesHeldThisWeek = subjectStat.presentCount + subjectStat.absentCount + subjectStat.medicalCount;
+    //TODO: calculate classesHeldThisWeek using slot afterwords
+    subjectStat.currentAttendanceThisWeek = ((subjectStat.presentCount / subjectStat.classesHeldThisWeek) * 100).toFixed(2);
+    subjectStat.projectedAttendanceThisWeek = (((subjectStat.presentCount) / subjectStat.classesThisWeek) * 100).toFixed(2);
+  })
+
+  const totalClassesThisWeek = Object.values(stats).reduce((acc, subjectStat) => acc + subjectStat.classesThisWeek, 0);
+  const totalClassesHeldThisWeek = Object.values(stats).reduce((acc, subjectStat) => acc + subjectStat.classesHeldThisWeek, 0);
+  const totalPresentThisWeek = Object.values(stats).reduce((acc, subjectStat) => acc + subjectStat.presentCount, 0);
+  const overallCurrentAttendanceThisWeek = ((totalPresentThisWeek / totalClassesHeldThisWeek) * 100).toFixed(2);
+  const overallProjectedAttendanceThisWeek = ((totalPresentThisWeek / totalClassesThisWeek) * 100).toFixed(2);
+
+  const finalStats = {
+    totalClassesThisWeek,
+    totalClassesHeldThisWeek,
+    totalPresentThisWeek,
+    overallCurrentAttendanceThisWeek,
+    overallProjectedAttendanceThisWeek,
+    stats,
+  }
+
+  return res.status(200).json(new ApiResponse(200, "Timetable stats fetched successfully", finalStats));
+});
 
 export {
   createTimetable,
@@ -25,6 +224,7 @@ export {
   addSubjectToTimetable,
   removeSubjectFromTimetable,
   getAllTimetables,
+  getAllTimetablesOfUser,
   getTimetableById,
   getTimetableStatByWeek,
 };
