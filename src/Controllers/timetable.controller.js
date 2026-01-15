@@ -8,7 +8,9 @@ import { Attendance } from "../Models/attendance.model.js";
 import getWeekClasses from "../helpers/getWeekClasses.helper.js";
 
 const createTimetable = asyncHandler(async (req, res) => {
-  const { name, semester, student, semesterType } = req.body;
+  const { name, semester, semesterType } = req.body;
+
+  student = req.user._id;
 
   if(!name) throw new ApiError(400, "Timetable name is required");
   if(!semester) throw new ApiError(400, "Semester is required");
