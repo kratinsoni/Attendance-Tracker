@@ -1,6 +1,7 @@
 
 import express from "express";
 
+import { verifyJWT } from "../Middlewares/auth.middleware.js";
 // Controllers
 import {
 	createSubject,
@@ -13,22 +14,13 @@ import {
 
 const subjetRouter = express.Router();
 
-// Create a subject
+subjetRouter.use(verifyJWT);
+
 subjetRouter.post("/", createSubject);
-
-// Delete a subject by id
 subjetRouter.delete("/:id", deleteSubject);
-
-// Update a subject by id
 subjetRouter.patch("/:id", updateSubject);
-
-// Get all subjects for a semester
 subjetRouter.get("/semester/:semester", getAllSubjectsOfSemester);
-
-// Get single subject by id
 subjetRouter.get("/:id", getSubjectById);
-
-// Get all subjects
 subjetRouter.get("/", getAllSubjects);
 
 export default subjetRouter;
